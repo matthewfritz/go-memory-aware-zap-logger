@@ -1,4 +1,4 @@
-package memorylogger
+package logger
 
 import "go.uber.org/zap/zapcore"
 
