@@ -7,14 +7,14 @@ import (
 type Core struct {
 	zapcore.Core
 
-	entries     []zapcore.Entry
+	entries     []*Entry
 	wrappedCore zapcore.Core
 }
 
 // NewCore takes a zapcore.Core implementation and returns a new memory-aware logging Core pointer.
 func NewCore(core zapcore.Core) *Core {
 	return &Core{
-		entries:     []zapcore.Entry{},
+		entries:     []*Entry{},
 		wrappedCore: core,
 	}
 }
@@ -36,6 +36,7 @@ func (c *Core) With(fields []zapcore.Field) zapcore.Core {
 }
 
 func (c *Core) Write(entry zapcore.Entry, fields []zapcore.Field) error {
-	// TODO: write to the memory buffer but for now just do a pass-through to check doubled log lines
-	return c.wrappedCore.Write(entry, fields)
+	// write to the slice and then return nil since this should always succeed
+	c.entries = append(c.entries, NewEntry(entry, fields))
+	return nil
 }
