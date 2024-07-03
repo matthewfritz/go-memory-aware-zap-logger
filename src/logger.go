@@ -13,7 +13,9 @@ type Logger struct {
 // NewLogger takes a zap.Logger pointer and returns a wrapped memory-aware logger pointer.
 func NewLogger(logger *zap.Logger) *Logger {
 	if logger == nil {
-		return nil
+		return &Logger{
+			wrappedLogger: zap.NewNop(),
+		}
 	}
 	memoryAwareCore := NewCore(logger.Core())
 	wrapOption := zap.WrapCore(func(core zapcore.Core) zapcore.Core {

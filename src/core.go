@@ -14,7 +14,10 @@ type Core struct {
 // NewCore takes a zapcore.Core implementation and returns a new memory-aware logging Core pointer.
 func NewCore(core zapcore.Core) *Core {
 	if core == nil {
-		return nil
+		return &Core{
+			entries:     []*Entry{},
+			wrappedCore: zapcore.NewNopCore(),
+		}
 	}
 	return &Core{
 		entries:     []*Entry{},
@@ -24,7 +27,7 @@ func NewCore(core zapcore.Core) *Core {
 
 func (c *Core) Check(entry zapcore.Entry, checkedEntry *zapcore.CheckedEntry) *zapcore.CheckedEntry {
 	if c == nil {
-		return nil
+		return checkedEntry
 	}
 	return c.wrappedCore.Check(entry, checkedEntry)
 }
