@@ -29,7 +29,7 @@ func NewLogger(logger *zap.Logger) *Logger {
 // WrappedLogger returns the underlying zap.Logger pointer so you can continue chaining log options.
 func (l *Logger) WrappedLogger() *zap.Logger {
 	if l == nil {
-		return nil
+		return zap.NewNop()
 	}
 	return l.wrappedLogger
 }
