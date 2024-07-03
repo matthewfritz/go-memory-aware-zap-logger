@@ -7,6 +7,7 @@ import (
 
 type Logger struct {
 	memoryAwareCore *Core
+	valid           bool
 	wrappedLogger   *zap.Logger
 }
 
@@ -22,13 +23,24 @@ func NewLogger(logger *zap.Logger) *Logger {
 		return zapcore.NewTee(core, memoryAwareCore)
 	})
 	return &Logger{
-		wrappedLogger: logger.WithOptions(wrapOption),
+		memoryAwareCore: memoryAwareCore,
+		valid:           true,
+		wrappedLogger:   logger.WithOptions(wrapOption),
 	}
+}
+
+// Valid returns whether the memory-aware logger has been marked as "valid". It is helpful to invoke this method
+// prior to use, especially if the NewLogger() function has not been called reliably.
+func (l *Logger) Valid() bool {
+	if l == nil || l.wrappedLogger == nil {
+		return false
+	}
+	return l.valid
 }
 
 // WrappedLogger returns the underlying zap.Logger pointer so you can continue chaining log options.
 func (l *Logger) WrappedLogger() *zap.Logger {
-	if l == nil || l.wrappedLogger == nil {
+	if !l.Valid() {
 		return zap.NewNop()
 	}
 	return l.wrappedLogger
